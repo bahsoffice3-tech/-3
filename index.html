@@ -524,20 +524,103 @@
 <script src="navigation.js"></script>
     
     <!-- Initialize App -->
+    <<script>
+        // Enable debugging
+        const DEBUG = true;
+        
+        // Debug function
+        function debugLog(message, data = null) {
+            if (DEBUG) {
+                console.log(`[DEBUG] ${message}`, data || '');
+                
+                // Show in debug info div
+                const debugDiv = document.getElementById('debugInfo');
+                if (debugDiv) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    debugDiv.innerHTML = `${timestamp}: ${message}`;
+                    debugDiv.style.display = 'block';
+                    
+                    // Hide after 3 seconds
+                    setTimeout(() => {
+                        debugDiv.style.display = 'none';
+                    }, 3000);
+                }
+            }
+        }
+        
+        // Override console.log for debugging
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            
+            // Also log to debug div if it's an important message
+            const firstArg = args[0];
+            if (typeof firstArg === 'string' && 
+                (firstArg.includes('🔥') || firstArg.includes('❌') || firstArg.includes('✅') || 
+                 firstArg.includes('🚀') || firstArg.includes('📡') || firstArg.includes('🎨'))) {
+                debugLog(firstArg);
+            }
+        };
+        
+        // Handle errors
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("Global error:", message, error);
+            debugLog(`Error: ${message}`);
+            return true;
+        };
+    </script>
+    
+    <!-- Initialize App -->
     <script>
         // Initialize app when DOM is loaded
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log("🚀 DOM Content Loaded");
+            
             // Check for saved login
             const savedUser = localStorage.getItem('mrds_user');
             const savedPass = localStorage.getItem('mrds_pass');
             
+            console.log("📱 Saved login:", savedUser ? "Found" : "Not found");
+            
             if (savedUser && savedPass) {
                 document.getElementById('loginMobile').value = savedUser;
                 document.getElementById('loginPass').value = savedPass;
+                document.getElementById('rememberMe').checked = true;
             }
             
             // Initialize database
-            await initializeDatabase();
+            console.log("🔄 Initializing database...");
+            try {
+                const dbInitialized = await initializeDatabase();
+                if (dbInitialized) {
+                    console.log("✅ Database initialized successfully");
+                    
+                    // Try auto-login if credentials exist
+                    if (savedUser && savedPass) {
+                        console.log("🔐 Attempting auto-login...");
+                        document.getElementById('loginMobile').value = savedUser;
+                        document.getElementById('loginPass').value = savedPass;
+                        // Uncomment to enable auto-login
+                        // handleLogin();
+                    }
+                } else {
+                    console.error("❌ Database initialization failed");
+                    alert("ডাটাবেস শুরু করতে সমস্যা হয়েছে। পৃষ্ঠাটি রিফ্রেশ করুন।");
+                }
+            } catch (error) {
+                console.error("❌ Initialization error:", error);
+                alert("শুরু করতে সমস্যা হয়েছে: " + error.message);
+            }
+        });
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                console.log("🔄 Page became visible, checking auth...");
+                if (CURR_USER) {
+                    console.log("👤 Current user:", CURR_USER.name);
+                }
+            }
         });
     </script>
 </body>
