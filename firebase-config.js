@@ -18,14 +18,30 @@ let EDITING_EXAM_ID = null;
 const IMGBB_KEY = 'a6b5ca76210be29fd294f56e3681660f';
 
 // ==================== FIREBASE INITIALIZATION ====================
+let db;
 try {
+    console.log("🚀 Initializing Firebase...");
+    
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
-        console.log("🔥 Firebase initialized successfully");
+        console.log("✅ Firebase initialized successfully");
+    } else {
+        console.log("ℹ️ Firebase already initialized");
     }
+    
+    db = firebase.database();
+    console.log("📊 Database reference obtained");
+    
+    // Test database connection
+    db.ref('.info/connected').on('value', (snap) => {
+        if (snap.val() === true) {
+            console.log("🌐 Firebase Realtime Database connected");
+        } else {
+            console.log("❌ Firebase Realtime Database disconnected");
+        }
+    });
+    
 } catch (error) {
     console.error("❌ Firebase initialization error:", error);
+    alert("Firebase initialization failed. Please check console.");
 }
-
-const db = firebase.database();
-
