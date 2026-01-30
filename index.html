@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ধূমকেতু</title>
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="style.css">
+  <!-- New Exam Theme CSS -->
+    <link rel="stylesheet" href="exam-theme.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen">
+        <div class="auth-box">
+            <div class="text-center mb-6">
+                <i class="fas fa-meteor text-primary" style="font-size: 3rem;"></i>
+                <h2 class="mt-2 text-primary">ধূমকেতু</h2>
+                <p class="text-light text-sm">Ultimate Education Platform</p>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="input-group">
+                    <input type="tel" id="loginMobile" placeholder="মোবাইল নম্বর" value="01700000000">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPass" placeholder="পাসওয়ার্ড" value="1234">
+                    <i class="fas fa-eye pass-toggle" onclick="togglePass('loginPass', this)"></i>
+                </div>
+                <div class="flex gap-2 mb-4">
+                    <input type="checkbox" id="rememberMe" style="width: auto;">
+                    <label for="rememberMe" class="text-sm">আমাকে মনে রাখুন</label>
+                </div>
+                <button class="btn mb-4" onclick="handleLogin()">লগইন করুন</button>
+                <div class="flex flex-between text-sm">
+                    <span class="text-primary font-bold cursor-pointer" onclick="toggleAuth('reg')">রেজিস্ট্রেশন</span>
+                    <span class="text-light cursor-pointer" onclick="toggleAuth('admin')">⭕</span>
+                </div>
+            </div>
+            
+            <!-- Admin Login Form -->
+            <div id="adminForm" class="hidden">
+                <h4 class="mb-4 text-center text-danger">অ্যাডমিন লগইন</h4>
+                <input type="text" id="adminUser" placeholder="অ্যাডমিন আইডি" value="admin">
+                <div class="input-group">
+                    <input type="password" id="adminPassInput" placeholder="পাসওয়ার্ড" value="1234">
+                    <i class="fas fa-eye pass-toggle" onclick="togglePass('adminPassInput', this)"></i>
+                </div>
+                <button class="btn btn-danger mb-4" onclick="handleAdminLogin()">অ্যাডমিন প্যানেল</button>
+                <div class="text-center text-sm text-primary cursor-pointer" onclick="toggleAuth('login')">❌</div>
+            </div>
+            
+            <!-- Registration Form -->
+            <div id="regForm" class="hidden">
+                <h4 class="mb-4 text-center text-success">নতুন রেজিস্ট্রেশন</h4>
+                <input type="text" id="regName" placeholder="নাম">
+                <select id="regClass">
+                    <option value="Class 6">Class 6</option>
+                    <option value="Class 7">Class 7</option>
+                    <option value="Class 8">Class 8</option>
+                    <option value="Class 9">Class 9</option>
+                    <option value="Class 10" selected>Class 10</option>
+                    <option value="SSC">SSC</option>
+                    <option value="HSC">HSC</option>
+                </select>
+                <input type="tel" id="regMob" placeholder="মোবাইল নম্বর">
+                <input type="password" id="regPass" placeholder="পাসওয়ার্ড">
+                <button class="btn btn-success" onclick="handleRegister()">রেজিস্টার করুন</button>
+                <div class="text-center mt-2 text-sm cursor-pointer" onclick="toggleAuth('login')">🔙</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <nav class="navbar">
+            <div class="nav-brand"><i class="fas fa-book-reader"></i> <span id="headerTitle">হোম</span></div>
+            <div class="flex gap-3 items-center">
+                <div class="text-right">
+                    <div class="text-xs text-light" id="navName">User</div>
+                    <div class="text-sm font-bold text-success" id="navBal">৳0</div>
+                </div>
+                <img src="" id="navAvatar" style="width:35px; height:35px; border-radius:50%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/35'">
+                <i class="fas fa-power-off logout-btn-nav" onclick="logoutConfirm()" title="Logout"></i>
+            </div>
+        </nav>
+
+        <div class="marquee-container">
+            <div class="marquee-content" id="marqueeText">Loading Notice...</div>
+        </div>
+
+        <div class="p-4">
+            <!-- Home View -->
+            <div id="view-home" class="view">
+                <a href="https://rds5545.blogspot.com/?m=1" target="_blank" class="card flex flex-between" style="text-decoration: none; border-left: 4px solid #f59e0b;">
+                    <div class="flex gap-3">
+                        <i class="fas fa-comet fa-2x text-warning"></i>
+                        <div><b class="text-primary">হ্যালির ধূমকেতু</b><div class="text-xs text-light">অফিসিয়াল ব্লগ</div></div>
+                    </div>
+                    <i class="fas fa-chevron-right text-light"></i>
+                </a>
+
+                <div class="card bg-indigo-50 border-indigo-100 flex flex-between">
+                    <div><h4 class="text-primary">RDS Library</h4><p class="text-xs text-light">Main External Library</p></div>
+                    <a href="https://mahamuds5545-afk.github.io/RDS_Libary/" target="_blank" class="btn btn-sm btn-outline">Visit <i class="fas fa-external-link-alt"></i></a>
+                </div>
+                
+                <h4 class="mb-2 text-light"><i class="fas fa-rss"></i> নিউজফিড</h4>
+                <div id="postFilterContainer" class="flex gap-2 overflow-x-auto pb-2 mb-2" style="scrollbar-width: none;">
+                    <button class="filter-btn active" onclick="filterPosts('All', this)">সব</button>
+                </div>
+                <div id="postsContainer"></div>
+            </div>
+
+            <!-- Exam View -->
+            <div id="view-exam" class="view hidden">
+                <h4 class="mb-4 text-light">চলমান এক্সাম</h4>
+                <div id="examList"></div>
+            </div>
+
+            <!-- Library View -->
+            <div id="view-library" class="view hidden">
+                <div class="card flex flex-between">
+                    <div class="flex gap-2"><i class="fas fa-globe fa-2x text-primary"></i><div><b>RDS Main Library</b><div class="text-xs text-light">Official Site</div></div></div>
+                    <a href="https://mahamuds5545-afk.github.io/RDS_Libary/" target="_blank" class="btn btn-sm">Open</a>
+                </div>
+                <h4 class="mb-2 text-light">পিডিএফ ও নোটস</h4>
+                <div id="libList"></div>
+            </div>
+
+            <!-- Wallet View -->
+            <div id="view-wallet" class="view hidden">
+                <div class="card text-center py-6" style="background: linear-gradient(135deg, #4338ca, #6366f1); color: white;">
+                    <p class="text-sm">বর্তমান ব্যালেন্স</p>
+                    <h1 class="my-2" style="font-size: 2.5rem;" id="walletBigBal">৳0</h1>
+                    <div class="flex gap-2 justify-center mt-4">
+                        <button class="btn bg-white text-primary w-auto px-6" onclick="showModal('deposit')"><i class="fas fa-plus"></i> জমা</button>
+                        <button class="btn bg-white/20 text-white w-auto px-6" onclick="showModal('withdraw')"><i class="fas fa-arrow-down"></i> উত্তোলন</button>
+                    </div>
+                </div>
+                <h4 class="mb-2 text-light">লেনদেন ইতিহাস</h4>
+                <div id="txHistory"></div>
+            </div>
+
+            <!-- Profile View -->
+            <div id="view-profile" class="view hidden">
+                <div class="card text-center">
+                    <img id="profileAvatar" src="" class="profile-pic" onerror="this.src='https://via.placeholder.com/100'">
+                    <h3 id="profileName">User</h3>
+                    <p class="text-light text-sm mb-4" id="profileMobile">017XXXXXXXX</p>
+                    <button class="btn btn-sm btn-outline w-full mb-2" onclick="document.getElementById('editSection').classList.toggle('hidden')"><i class="fas fa-edit"></i> এডিট প্রোফাইল</button>
+
+                    <div id="editSection" class="hidden text-left mt-2 bg-gray-50 p-2 rounded">
+                        <label class="text-xs font-bold text-light">নাম পরিবর্তন</label>
+                        <input type="text" id="editName">
+                        <label class="text-xs font-bold text-light">পাসওয়ার্ড পরিবর্তন</label>
+                        <input type="text" id="editPass">
+                        <label class="text-xs font-bold text-light">পিকচার আপলোড</label>
+                        <input type="file" id="editPicFile" accept="image/*">
+                        <button class="btn btn-sm" id="btnUpdateProfile" onclick="updateProfile()">Save Changes</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 class="mb-2 text-primary"><i class="fas fa-envelope"></i> অ্যাডমিন সাপোর্ট</h4>
+                    <div class="flex gap-2">
+                        <input type="text" id="userMsgInput" placeholder="আপনার সমস্যা লিখুন..." style="margin-bottom:0;">
+                        <button class="btn btn-sm w-auto" onclick="sendMsgToAdmin()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                    <div id="userMsgList" class="mt-4"></div>
+                </div>
+            </div>
+
+            <!-- Admin View -->
+            <div id="view-admin" class="view hidden">
+                <div class="card bg-gray-100 flex flex-between">
+                    <span>External Admin Panel</span>
+                    <a href="https://mahamuds5545-afk.github.io/RDS_Libary/admin" target="_blank" class="btn btn-sm btn-outline">Go <i class="fas fa-external-link-alt"></i></a>
+                </div>
+
+                <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+                    <button class="btn btn-sm" onclick="admTab('users')">ছাত্রছাত্রী</button>
+                    <button class="btn btn-sm" onclick="admTab('pay')">পেমেন্ট</button>
+                    <button class="btn btn-sm" onclick="admTab('msg')">মেসেজ</button>
+                    <button class="btn btn-sm" onclick="admTab('exam')">এক্সাম</button>
+                    <button class="btn btn-sm" onclick="admTab('post')">পোস্ট</button>
+                    <button class="btn btn-sm" onclick="admTab('lib')">লাইব্রেরি</button>
+                    <button class="btn btn-sm" onclick="admTab('set')">সেটিংস</button>
+                </div>
+
+                <div id="adm-users" class="adm-sec">
+                    <div class="flex flex-between mb-4">
+                        <h4 class="text-light">ছাত্র তালিকা ও ব্যালেন্স</h4>
+                        <input type="text" id="searchStudent" placeholder="সার্চ করুন..." class="w-auto" style="width: 150px;" onkeyup="searchStudents(this.value)">
+                    </div>
+                    <div id="admUserList"></div>
+                </div>
+
+                <div id="adm-pay" class="adm-sec hidden">
+                    <h4 class="mb-2 text-primary">Pending Requests</h4>
+                    <div id="admPayList"></div>
+                    <h4 class="mb-2 mt-4 text-light">Payment History</h4>
+                    <div id="admPayHistory"></div>
+                </div>
+
+                <div id="adm-msg" class="adm-sec hidden">
+                    <h4 class="mb-2 text-light">শিক্ষার্থীদের মেসেজ</h4>
+                    <div id="admMsgList"></div>
+                </div>
+
+                <div id="adm-exam" class="adm-sec hidden">
+                    <div class="card">
+                        <h4 id="examModalTitle">Create Exam</h4>
+                        <input type="hidden" id="exIdx" value="-1">
+                        <input type="hidden" id="editExamId" value="">
+                        <label class="text-xs">Exam Mode</label>
+                        <select id="exMode" onchange="toggleMode()">
+                            <option value="Native">Native MCQ</option>
+                            <option value="Google">Google Form</option>
+                        </select>
+                        
+                        <input type="text" id="exTitle" placeholder="Exam Title">
+                        <select id="exClass">
+                            <option value="All">All Classes</option>
+                            <option value="Class 6">Class 6</option>
+                            <option value="Class 7">Class 7</option>
+                            <option value="Class 8">Class 8</option>
+                            <option value="Class 9">Class 9</option>
+                            <option value="Class 10">Class 10</option>
+                            <option value="SSC">SSC</option>
+                            <option value="HSC">HSC</option>
+                        </select>
+                        <div class="flex gap-2">
+                            <input type="datetime-local" id="exStart">
+                            <input type="datetime-local" id="exEnd">
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="number" id="exDur" placeholder="Duration (Min)">
+                            <input type="number" id="exFee" placeholder="Entry Fee">
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="number" id="exPrize" placeholder="Total Prize" value="0">
+                            <input type="number" id="exGift" placeholder="Gift Amount" value="0">
+                        </div>
+                        
+                        <div id="googleMode" class="hidden">
+                            <input type="text" id="exLink" placeholder="Google Form Link">
+                        </div>
+
+                        <div id="nativeMode">
+                            <hr class="my-4">
+                            <div class="flex flex-between mb-2">
+                                <label class="font-bold">প্রশ্ন তালিকা</label>
+                                <button class="btn btn-sm w-auto" onclick="addQ()"><i class="fas fa-plus"></i> নতুন প্রশ্ন</button>
+                            </div>
+                            <div id="qList" class="flex-col gap-2"></div>
+                        </div>
+
+                        <button class="btn btn-success" id="btnSave" onclick="saveExam()">Save Exam</button>
+                        <button class="btn btn-danger hidden" id="btnCancelEdit" onclick="cancelEditExam()">Cancel Edit</button>
+                    </div>
+                    <h4 class="mb-2 mt-4 text-light">Existing Exams</h4>
+                    <div id="admExList"></div>
+                </div>
+
+                <div id="adm-post" class="adm-sec hidden">
+                    <div class="card">
+                        <h4>নতুন পোস্ট</h4>
+                        <label class="text-xs">ক্যাটাগরি সিলেক্ট করুন</label>
+                        <select id="admPostCategory" class="mb-2">
+                            <option value="General">General</option>
+                        </select>
+                        <input type="text" id="admPostTitle" placeholder="টাইটেল">
+                        <textarea id="admPostContent" rows="3" placeholder="বিস্তারিত..."></textarea>
+                        <textarea id="admPostTranslation" rows="2" placeholder="বাংলা অনুবাদ (ঐচ্ছিক)"></textarea>
+                        <label class="text-xs">ছবি</label>
+                        <input type="file" id="admPostImg" accept="image/*">
+                        <input type="text" id="admPostLink" placeholder="Link">
+                        <input type="text" id="admPostLinkTxt" placeholder="Button Text">
+                        <button class="btn" id="btnPost" onclick="admAddPost()">পোস্ট করুন</button>
+                    </div>
+                    <h4 class="mb-2 mt-6 text-light">সকল পোস্ট</h4>
+                    <div id="allPostsList"></div>
+                </div>
+                
+                <div id="adm-lib" class="adm-sec hidden">
+                    <div class="card">
+                        <h4>লাইব্রেরি</h4>
+                        <input type="text" id="libTitle" placeholder="নাম">
+                        <input type="text" id="libLink" placeholder="Link">
+                        <select id="libType">
+                            <option>PDF</option>
+                            <option>Video</option>
+                        </select>
+                        <button class="btn" onclick="admAddLib()">যোগ করুন</button>
+                    </div>
+                </div>
+                
+                <div id="adm-set" class="adm-sec hidden">
+                    <div class="card">
+                        <h4>সেটিংস</h4>
+                        <label class="text-xs">নোটিশ</label>
+                        <input type="text" id="setNotice">
+                        <div class="flex gap-2">
+                            <div>
+                                <label class="text-xs">bKash</label>
+                                <input type="text" id="setBkash">
+                            </div>
+                            <div>
+                                <label class="text-xs">Nagad</label>
+                                <input type="text" id="setNagad">
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <div>
+                                <label class="text-xs">Min Dep</label>
+                                <input type="number" id="setMinDep">
+                            </div>
+                            <div>
+                                <label class="text-xs">Min Wd</label>
+                                <input type="number" id="setMinWd">
+                            </div>
+                        </div>
+                        <button class="btn" onclick="admSaveSet()">সেভ করুন</button>
+                        <hr class="my-4" style="border-top: 1px solid #eee;">
+                        <h4>ক্যাটাগরি ম্যানেজমেন্ট</h4>
+                        <div class="flex gap-2">
+                            <input type="text" id="newCatName" placeholder="নতুন ক্যাটাগরি নাম (যেমন: Notice)">
+                            <button class="btn w-auto" onclick="admAddCategory()"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div id="admCatList" class="flex gap-2 flex-wrap mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="nav('home', this)"><i class="fas fa-home"></i> হোম</button>
+            <button class="nav-item" onclick="nav('exam', this)"><i class="fas fa-clipboard-check"></i> এক্সাম</button>
+            <button class="nav-item" onclick="nav('library', this)"><i class="fas fa-book"></i> লাইব্রেরি</button>
+            <button class="nav-item" onclick="nav('wallet', this)"><i class="fas fa-wallet"></i> ওয়ালেট</button>
+            <button class="nav-item" onclick="nav('profile', this)"><i class="fas fa-user-circle"></i> প্রোফাইল</button>
+            <button class="nav-item hidden" id="navAdminBtn" onclick="nav('admin', this)"><i class="fas fa-shield-alt"></i></button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-deposit" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex flex-between mb-4">
+                <h3>ডিপোজিট</h3>
+                <i class="fas fa-times" onclick="closeModal()"></i>
+            </div>
+            <div class="card bg-gray-50 text-sm">
+                <div class="flex flex-between mb-2">
+                    <span>bKash: <b id="viewBkash">...</b></span>
+                    <button class="btn-sm btn-outline" onclick="copy('viewBkash')">Copy</button>
+                </div>
+                <div class="flex flex-between">
+                    <span>Nagad: <b id="viewNagad">...</b></span>
+                    <button class="btn-sm btn-outline" onclick="copy('viewNagad')">Copy</button>
+                </div>
+                <div class="text-center mt-2 text-xs text-light">Min Deposit: ৳<span id="viewMinDep"></span></div>
+            </div>
+            <input type="number" id="depAmt" placeholder="টাকার পরিমাণ">
+            <select id="depMethod">
+                <option>bKash</option>
+                <option>Nagad</option>
+            </select>
+            <input type="text" id="depTrx" placeholder="TrxID">
+            <button class="btn btn-success" onclick="reqDep()">Send Request</button>
+        </div>
+    </div>
+
+    <div id="modal-withdraw" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex flex-between mb-4">
+                <h3>উত্তোলন</h3>
+                <i class="fas fa-times" onclick="closeModal()"></i>
+            </div>
+            <p class="text-center text-sm mb-4">Min Withdraw: ৳<span id="viewMinWd"></span></p>
+            <input type="number" id="wdAmt" placeholder="Amount">
+            <select id="wdMethod">
+                <option>bKash</option>
+                <option>Nagad</option>
+            </select>
+            <input type="text" id="wdNum" placeholder="Phone Number">
+            <button class="btn btn-danger" onclick="reqWd()">Withdraw</button>
+        </div>
+    </div>
+
+    <div id="modal-edit-user" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex flex-between mb-4">
+                <h3>Edit Student</h3>
+                <i class="fas fa-times" onclick="closeModal()"></i>
+            </div>
+            <input type="hidden" id="editUserMobile">
+            <div class="text-center mb-4">
+                <img id="editUserAvatar" src="" class="profile-pic-small" style="display: inline-block;" onerror="this.src='https://via.placeholder.com/50'">
+            </div>
+            <input type="text" id="editUserName" placeholder="Name">
+            <select id="editUserClass">
+                <option value="Class 6">Class 6</option>
+                <option value="Class 7">Class 7</option>
+                <option value="Class 8">Class 8</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 10">Class 10</option>
+                <option value="SSC">SSC</option>
+                <option value="HSC">HSC</option>
+            </select>
+            <div class="flex gap-2 mb-4">
+                <input type="number" id="editUserBal" placeholder="Balance">
+                <input type="password" id="editUserPass" placeholder="Password">
+            </div>
+            <label class="text-xs font-bold text-light">প্রোফাইল পিকচার পরিবর্তন</label>
+            <input type="file" id="editUserPicFile" accept="image/*">
+            <div class="flex gap-2 mt-4">
+                <button class="btn btn-success" onclick="saveUserChanges()">Save Changes</button>
+                <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-exam" class="modal hidden">
+        <div class="modal-content" style="border-radius: 0; max-width: 100%; height: 100%; padding: 0;">
+            <div class="timer-bar">
+                <span id="runExamTitle">Exam</span>
+                <span id="timerDisplay">00:00</span>
+            </div>
+            <div id="examBody" class="p-4" style="padding-bottom: 80px;"></div>
+            <div style="position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px; background: white; border-top: 1px solid var(--border); display: flex; gap: 8px;">
+                <button class="btn btn-danger w-1/3" onclick="closeModal()">Exit</button>
+                <button class="btn btn-success w-2/3" onclick="submitExam()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-leaderboard" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex flex-between mb-4">
+                <h3><i class="fas fa-trophy text-warning"></i> মেরিট লিস্ট</h3>
+                <i class="fas fa-times" onclick="closeModal()"></i>
+            </div>
+            <div class="card bg-indigo-50 text-center p-2 mb-2 text-xs">
+                এই এক্সামে অংশগ্রহণকারী শিক্ষার্থীদের তালিকা এবং প্রাপ্ত নম্বর
+            </div>
+            <div id="leaderboardBody" style="max-height: 400px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <div id="modal-result-view" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex flex-between mb-4">
+                <h3>উত্তরপত্র</h3>
+                <i class="fas fa-times" onclick="closeModal()"></i>
+            </div>
+            <div id="resultDetailsBody" style="padding-bottom: 20px;"></div>
+        </div>
+    </div>
+
+    <div id="modal-attendees" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex flex-between mb-4">
+                <h3 id="attendeeTitle">Exam Attendees</h3>
+                <i class="fas fa-times" onclick="closeModal()"></i>
+            </div>
+            <div id="attendeeListContent"></div>
+        </div>
+    </div>
+
+    <div id="modal-edit-post" class="modal hidden">
+        <div class="modal-content edit-post-modal">
+            <div class="flex flex-between mb-4">
+                <h3>পোস্ট এডিট করুন</h3>
+                <i class="fas fa-times" onclick="closeModal()"></i>
+            </div>
+            <input type="hidden" id="editPostId">
+            <label class="text-xs">ক্যাটাগরি</label>
+            <select id="editPostCategoryInput" class="mb-2"></select>
+            <input type="text" id="editPostTitle" placeholder="টাইটেল">
+            <textarea id="editPostContent" rows="4" placeholder="বিস্তারিত..."></textarea>
+            <textarea id="editPostTranslation" rows="2" placeholder="বাংলা অনুবাদ (ঐচ্ছিক)"></textarea>
+            <div class="mb-4">
+                <label class="text-xs font-bold text-light">বর্তমান ছবি</label>
+                <img id="currentPostImage" src="" style="max-width: 100%; border-radius: 8px; margin-top: 5px; max-height: 200px; object-fit: cover;" onerror="this.style.display='none'">
+            </div>
+            <label class="text-xs font-bold text-light">নতুন ছবি আপলোড করুন (ঐচ্ছিক)</label>
+            <input type="file" id="editPostImg" accept="image/*">
+            <input type="text" id="editPostLink" placeholder="লিংক">
+            <input type="text" id="editPostLinkTxt" placeholder="বাটন টেক্সট">
+            <div class="flex gap-2 mt-6">
+                <button class="btn btn-success" onclick="updatePost()">সেভ করুন</button>
+                <button class="btn btn-danger" onclick="closeModal()">বাতিল করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <!-- JavaScript Files -->
+<script src="firebase-config.js"></script>
+<script src="database.js"></script>
+<script src="auth.js"></script>
+<script src="utility.js"></script>
+<script src="ui-render.js"></script>
+<script src="user-functions.js"></script>
+<script src="post-system.js"></script>
+<script src="exam-system.js"></script>
+<script src="exam-render.js"></script>  <!-- নতুন ফাইল -->
+<script src="wallet-system.js"></script>
+<script src="admin-functions.js"></script>
+<script src="navigation.js"></script>
+    
+    <!-- Initialize App -->
+    <script>
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check for saved login
+            const savedUser = localStorage.getItem('mrds_user');
+            const savedPass = localStorage.getItem('mrds_pass');
+            
+            if (savedUser && savedPass) {
+                document.getElementById('loginMobile').value = savedUser;
+                document.getElementById('loginPass').value = savedPass;
+            }
+            
+            // Initialize database
+            await initializeDatabase();
+        });
+    </script>
+</body>
+</html>

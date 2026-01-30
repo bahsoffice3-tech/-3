@@ -1,0 +1,420 @@
+/* ==================== ADVANCED MCQ EXAM THEME ==================== */
+
+/* Exam Container */
+.exam-theme-container {
+    padding: 20px;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+/* Exam Header */
+.exam-header-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+}
+
+.exam-header-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.exam-header-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.exam-header-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+/* Question Counter */
+.question-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.counter-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.question-number {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4f46e5;
+    background: #eef2ff;
+    padding: 8px 16px;
+    border-radius: 10px;
+}
+
+.question-status {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* Question Card */
+.question-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.question-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.question-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #1e293b;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+.question-text math {
+    font-size: 1.2rem;
+}
+
+.question-image {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 15px 0;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Options Grid */
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+/* Option Card */
+.option-card {
+    display: flex;
+    align-items: center;
+    padding: 18px 20px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.option-card:hover {
+    transform: translateX(5px);
+    border-color: #c7d2fe;
+    background: #f1f5f9;
+}
+
+.option-card.selected {
+    border-color: #4f46e5;
+    background: linear-gradient(to right, #eef2ff, #f8fafc);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.15);
+}
+
+.option-letter {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-right: 15px;
+    flex-shrink: 0;
+    transition: all 0.3s;
+}
+
+.option-card.selected .option-letter {
+    background: #4f46e5;
+    color: white;
+    transform: scale(1.1);
+}
+
+.option-text {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #334155;
+}
+
+.option-check {
+    margin-left: 15px;
+    color: #10b981;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 1.2rem;
+}
+
+.option-card.selected .option-check {
+    opacity: 1;
+    animation: bounceIn 0.5s;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Navigation Buttons */
+.exam-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    margin-top: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    bottom: 20px;
+    z-index: 100;
+}
+
+.nav-btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-btn-prev {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.nav-btn-prev:hover {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.nav-btn-next {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+.nav-btn-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.nav-btn-submit {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.nav-btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Progress Bar */
+.progress-container {
+    margin: 20px 0;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Question List */
+.question-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.question-number-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.question-number-btn:hover {
+    border-color: #c7d2fe;
+    background: #f8fafc;
+}
+
+.question-number-btn.answered {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #15803d;
+}
+
+.question-number-btn.current {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Timer Styles */
+.exam-timer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-left: auto;
+}
+
+.timer-icon {
+    color: #d97706;
+    font-size: 1.2rem;
+}
+
+.timer-text {
+    font-weight: 700;
+    color: #92400e;
+    font-size: 1.1rem;
+}
+
+.timer-warning {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+}
+
+.timer-warning .timer-icon {
+    color: #dc2626;
+}
+
+.timer-warning .timer-text {
+    color: #991b1b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .exam-header-subtitle {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .question-counter {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .exam-navigation {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .question-list-grid {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    }
+    
+    .question-number-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .exam-theme-container {
+        background: #0f172a;
+    }
+    
+    .question-card, .question-counter, .exam-navigation {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    
+    .question-text {
+        color: #e2e8f0;
+    }
+    
+    .option-card {
+        background: #334155;
+        border-color: #475569;
+    }
+    
+    .option-card:hover {
+        background: #475569;
+        border-color: #64748b;
+    }
+    
+    .option-text {
+        color: #cbd5e1;
+    }
+    
+    .option-letter {
+        background: #475569;
+        color: #cbd5e1;
+    }
+}
+
